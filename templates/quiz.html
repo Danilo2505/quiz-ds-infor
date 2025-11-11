@@ -23,6 +23,7 @@
 
   <body>
     <div id="div-cards-perguntas">
+      <!-- ----- Botões de Navegação das Perguntas ----- -->
       <div id="div-cards-navigator">
         <button id="button-previous-card">
           <img
@@ -39,10 +40,10 @@
           />
         </button>
       </div>
+      <!-- ----- Cards das Perguntas ----- -->
       {% for pergunta in perguntas %}
-      <!-- id="div-card-box-id-pergunta-{{ pergunta.id }}" -->
-      <div class="div-card-box" id_pergunta="{{ pergunta.id }}">
-        <div class="div-card-pergunta">
+      <div class="div-card-box">
+        <div class="div-card-pergunta" id_pergunta="{{ pergunta.id }}">
           <ul class="ul-temas">
             {% for nome_tema in nomes_temas[pergunta.id] %}
             <li class="li-tema">{{ nome_tema }}</li>
@@ -51,10 +52,10 @@
           <p class="p-conteudo-pergunta">{{ pergunta.conteudo.pergunta }}</p>
           <ul class="ul-alternativas">
             {% for i in range(pergunta.alternativas | length) %}
-            <li class="li-alternativa">
+            <li class="li-alternativa" id_alternativa="{{ i + 1 }}">
               <button
                 class="button-alternativa"
-                onclick="enviarAlternativa({{ pergunta.id }}, {{ i + 1 }})"
+                onclick="escolherAlternativa({{ pergunta.id }}, {{ i + 1 }})"
               >
                 {{ indicadores_alternativas[i] }}) {{ pergunta.alternativas[i]
                 }}
@@ -65,6 +66,18 @@
         </div>
       </div>
       {% endfor %}
+      <!-- ----- Card de Envio ----- -->
+      <div class="div-card-box">
+        <div class="div-card-envio">
+          <p>Deseja enviar?</p>
+          <div>
+            <button onclick="enviarRespostas()" class="button-sim">Sim</button>
+            <button onclick="voltarParaPrimeiraPergunta()" class="button-nao">
+              Não
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- --- Botão de Tema --- -->

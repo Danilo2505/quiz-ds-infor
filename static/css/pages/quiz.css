@@ -1,9 +1,11 @@
 :root {
   /*  */
-  --padding-div-cards-navigator: 2rem;
+  --padding-div-cards-navigator: 1.5rem;
   /*  */
+  --gap-button-cards-navigator: 0.5rem;
   --size-button-cards-navigator: 3rem;
-  --padding-button-cards-navigator: 0.75rem;
+  --size-svg-button-cards-navigator: 1.25rem;
+  --padding-button-cards-navigator: 0.5rem;
   /*  */
   --margin-div-card-pergunta: 2rem;
   --padding-div-card-pergunta: 2rem;
@@ -12,6 +14,7 @@
   --gap-ul-temas: 1rem;
 }
 
+/* ----- Cards de Perguntas ----- */
 #div-cards-perguntas {
   width: 100dvw;
   height: 100dvh;
@@ -19,6 +22,7 @@
   scroll-snap-type: y mandatory;
 }
 
+/* --- Botões de Navegação --- */
 #div-cards-navigator {
   position: fixed;
   top: 0;
@@ -31,7 +35,9 @@
 }
 
 #div-cards-navigator button {
-  width: var(--size-button-cards-navigator);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   height: var(--size-button-cards-navigator);
   background-color: transparent;
   border-radius: 50vh;
@@ -39,44 +45,32 @@
   color: var(--accent-color-1);
   display: flex;
   padding: var(--padding-button-cards-navigator);
+  gap: var(--gap-button-cards-navigator);
 }
 
 #div-cards-navigator button svg {
-  flex-grow: 1;
-  height: auto;
+  height: var(--size-svg-button-cards-navigator);
+  width: auto;
   aspect-ratio: 1/1;
 }
 
-#button-previous-card:hover::after,
-#button-next-card:hover::before {
-  position: absolute;
+/* - Texto de Apoio dos Botões de Navegação - */
+#button-previous-card::after,
+#button-next-card::before {
   width: auto;
-  height: calc(
-    var(--size-button-cards-navigator) -
-      calc(2 * var(--padding-button-cards-navigator))
-  );
+  height: var(--size-svg-button-cards-navigator);
   font-size: 1rem;
 }
 
 #button-previous-card:hover::after {
   content: "Pergunta Anterior";
-  transform: translateX(
-    calc(
-      var(--size-button-cards-navigator) - var(--padding-button-cards-navigator)
-    )
-  );
 }
 
 #button-next-card:hover::before {
   content: "Próxima Pergunta";
-  transform: translateX(
-    calc(
-      -1 * calc(var(--size-button-cards-navigator) +
-            var(--padding-button-cards-navigator))
-    )
-  );
 }
 
+/* ----- Caixas dos Cards ----- */
 .div-card-box {
   scroll-snap-align: center;
   width: 100dvw;
@@ -86,6 +80,7 @@
   justify-content: center;
 }
 
+/* ----- Card de Pergunta ----- */
 .div-card-pergunta {
   max-width: 1000px;
   max-height: 800px;
@@ -95,12 +90,14 @@
   border: 2px solid var(--accent-color-1);
 }
 
+/* --- Lista de Temas --- */
 .ul-temas {
   display: inline-flex;
   flex-direction: row;
   gap: var(--gap-ul-temas);
 }
 
+/* - Tema - */
 .li-tema {
   width: fit-content;
 }
@@ -109,20 +106,26 @@
   color: var(--bg-color-5);
 }
 
+/* - Conteúdo da Pergunta - */
 .p-conteudo-pergunta {
   font-size: 2rem;
 }
 
-.ul-alternativas {
-}
-
+/* - Alternativa - */
 .li-alternativa {
+  color: var(--accent-color-1);
 }
 
+/* - Alternativa Selecionada - */
+.alternativa-selecionada {
+  color: var(--accent-color-2);
+}
+
+/* - Botão da Alternativa - */
 .button-alternativa {
   border: none;
   background-color: transparent;
-  color: var(--accent-color-1);
+  color: inherit;
   font-size: 1.25rem;
 }
 
@@ -142,4 +145,52 @@
 #div-cards-perguntas::-webkit-scrollbar,
 .ul-temas::-webkit-scrollbar {
   display: none;
+}
+
+/* ----- Card de Envio ----- */
+.div-card-envio {
+  max-width: 1000px;
+  max-height: 800px;
+  margin: var(--margin-div-card-pergunta);
+  padding: var(--padding-div-card-pergunta);
+  border-radius: var(--border-radius-div-card-pergunta);
+  border: 2px solid var(--accent-color-1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: var(--accent-color-1);
+}
+
+.div-card-envio p {
+  font-size: 2rem;
+  color: inherit;
+}
+
+.div-card-envio div {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  color: inherit;
+}
+
+.div-card-envio div button {
+  color: inherit;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.div-card-envio div .button-sim {
+  background-color: rgb(0, 150, 0);
+}
+
+.div-card-envio div .button-nao {
+  background-color: rgb(150, 0, 0);
+}
+
+.div-card-envio div button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.1);
+  transition: 0.3s;
 }
