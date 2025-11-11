@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Base para Sites com Temas</title>
+    <title>Início - Quiz DS e Infor</title>
 
     <!-- ----- CSS ----- -->
     <link rel="stylesheet" href="/static/css/reset.css" />
@@ -16,16 +16,11 @@
 
   <!-- ----- Scripts ----- -->
   <script src="/static/js/themeManager.js" defer></script>
+  <!-- --- Script Específico --- -->
+  <script src="/static/js/pages/index.js" defer></script>
 
   <body>
     <h1></h1>
-
-    {% for pergunta in perguntas %}
-    <div class="div-card-pergunta">
-      <p class="p-conteudo-pergunta">{{ pergunta.conteudo.pergunta }}</p>
-      <div class="div-alternativas"></div>
-    </div>
-    {% endfor %}
 
     <!-- --- Botão de Tema --- -->
     <button id="button-tema" aria-label="Mudar tema"></button>

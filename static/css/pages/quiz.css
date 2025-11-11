@@ -1,0 +1,77 @@
+:root {
+  --margin-div-card-pergunta: 2rem;
+  --padding-div-card-pergunta: 2rem;
+  --border-radius-div-card-pergunta: 2rem;
+  --gap-ul-temas: 1rem;
+}
+
+.div-cards-perguntas {
+  width: 100dvw;
+  height: 100dvh;
+}
+
+.div-card-box {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.div-card-pergunta {
+  max-width: 1000px;
+  max-height: 800px;
+  margin: var(--margin-div-card-pergunta);
+  padding: var(--padding-div-card-pergunta);
+  border-radius: var(--border-radius-div-card-pergunta);
+  border: 2px solid var(--accent-color-1);
+}
+
+.ul-temas {
+  display: inline-flex;
+  flex-direction: row;
+  gap: var(--gap-ul-temas);
+}
+
+.li-tema {
+  width: fit-content;
+}
+
+.li-tema:hover {
+  color: var(--bg-color-5);
+}
+
+.p-conteudo-pergunta {
+  font-size: 2rem;
+}
+
+.ul-alternativas {
+}
+
+.li-alternativa {
+}
+
+.button-alternativa-pergunta {
+  border: none;
+  background-color: transparent;
+  color: var(--accent-color-1);
+  font-size: 1.25rem;
+}
+
+.button-alternativa-pergunta:hover {
+  color: var(--accent-color-2);
+  transform: scale(1.1);
+}
+
+/* Esconde a Barra de Scroll */
+.div-cards-perguntas,
+.ul-temas {
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.div-cards-perguntas::-webkit-scrollbar,
+.ul-temas::-webkit-scrollbar {
+  display: none;
+}

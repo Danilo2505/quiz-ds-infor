@@ -5,11 +5,16 @@ import json
 
 
 app = Flask(__name__)
+
 HOST = "0.0.0.0"
 PORT = 5000
 DB_NAME = "quiz_ds_infor"
+
 caminho_schema_sql = "schema.sql"
 caminho_population_sql = "population.sql"
+
+alfabeto_minusculo = [chr(i) for i in range(ord("a"), ord("z") + 1)]
+alfabeto_maiusculo = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
 
 
 # Define o diretório de trabalho como o diretório do arquivo Python
@@ -37,51 +42,49 @@ def limpar_terminal(aguardar: bool = False):
 
 
 def executar_sql(caminho_sql: str):
-    comando_atual = ""
-    comentario_multilinha = False
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", autocommit=False
+    )
+    cursor = conexao.cursor()
 
-    # Conecta-se ao banco de dados
-    print("--- Conecta-se ao banco de dados ---")
-    conexao = mysql.connector.connect(host="localhost", user="root", password="")
-    cursor = conexao.cursor(dictionary=True)
-
-    # Lê o schema.sql
     with open(caminho_sql, "r", encoding="utf-8") as file:
         linhas = file.readlines()
-        file.close()
 
-    for linha in linhas:
-        # Fim de um Comentário Multilinha
-        if comentario_multilinha == True and "*/" in linha:
-            comentario_multilinha = False
-        # Ainda dentro de um comentário multilinha
-        elif comentario_multilinha == True:
+    comando_atual = []
+    dentro_comentario = False
+
+    for num_linha, linha in enumerate(linhas, start=1):
+        linha_strip = linha.strip()
+
+        # Detecta início/fim de comentário multilinha
+        if linha_strip.startswith("/*"):
+            dentro_comentario = True
             continue
-        # Começo de um Comentário Multilinha
-        elif linha.startswith("/*"):
-            comentario_multilinha = True
-        # Comentário de linha única
-        elif "-- " in linha:
-            antes, _, depois = linha.partition("--")
-            print(_ + depois)
-            # Evita rodar query vazia
-            if antes.strip():
-                cursor.execute(antes)
-        # Fim de um comando
-        elif linha.endswith(";") or linha.endswith(";\n"):
-            comando_atual += linha
-            # Tenda executar
+        if dentro_comentario:
+            if "*/" in linha_strip:
+                dentro_comentario = False
+            continue
+
+        # Ignora linhas de comentário simples
+        if linha_strip.startswith("--") or not linha_strip:
+            continue
+
+        # Acumula linha atual
+        comando_atual.append(linha)
+
+        # Se encontrou o fim de comando
+        if linha_strip.endswith(";"):
+            comando_sql = "".join(comando_atual).strip()
+
             try:
-                cursor.execute(comando_atual)
-            # Mostra o erro
+                cursor.execute(comando_sql)
             except Exception as e:
-                print(e)
-            comando_atual = ""
-        # Acrescenta as linhas ao comando atual
-        else:
-            comando_atual += linha
+                print(f"\n⚠️ Erro na linha {num_linha}: {e}")
+                print(f"Comando problemático:\n{comando_sql}\n")
+            comando_atual = []  # limpa o buffer
 
     conexao.commit()
+    cursor.close()
     conexao.close()
 
 
@@ -98,7 +101,7 @@ def conectar():
 
 # ----- CRUD -----
 
-'''
+"""
 # --- Criar ---
 def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: str):
     conexao = conectar()
@@ -112,13 +115,14 @@ def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: st
     conexao.close()
 
     print("Livro Adicionado com Sucesso!!!")
-'''
+"""
 
 
 # --- Ler/Listar ---
+# - Perguntas -
 def listar_perguntas():
     conexao = mysql.connector.connect(
-        host="localhost", user="root", password="", database="quiz_ds_infor"
+        host="localhost", user="root", password="", database=DB_NAME
     )
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT * FROM perguntas")
@@ -131,6 +135,71 @@ def listar_perguntas():
         p["alternativas"] = json.loads(p["alternativas"])
 
     return perguntas
+
+
+# - ID dos Temas através do ID da Pergunta -
+def listar_ids_temas_pelo_id_pergunta(id_pergunta: int):
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT
+            p.id AS id_pergunta,
+            t.id AS id_tema
+        FROM
+            perguntas AS p
+        INNER JOIN
+            perguntas_temas AS pt ON p.id = pt.id_pergunta
+        INNER JOIN
+            temas AS t ON pt.id_tema = t.id
+        WHERE
+            p.id = %s;
+    """,
+        (id_pergunta,),
+    )
+
+    resultados = cursor.fetchall()
+    conexao.close()
+
+    lista_ids_temas = {linha["id_tema"] for linha in resultados}
+
+    return lista_ids_temas
+
+
+# - Nomes dos Temas através do ID da Pergunta -
+def listar_nomes_temas_pelo_id_pergunta(id_pergunta: int):
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT
+            p.id AS id_pergunta,
+            t.id AS id_tema,
+            t.nome AS nome_tema
+        FROM
+            perguntas AS p
+        INNER JOIN
+            perguntas_temas AS pt ON p.id = pt.id_pergunta
+        INNER JOIN
+            temas AS t ON pt.id_tema = t.id
+        WHERE
+            p.id = %s;
+    """,
+        (id_pergunta,),
+    )
+
+    resultados = cursor.fetchall()
+    conexao.close()
+
+    lista_nomes_temas = [linha["nome_tema"] for linha in resultados]
+
+    return lista_nomes_temas
 
 
 '''
@@ -166,7 +235,7 @@ def excluir_livro(id_livro):
 
 def popular_db():
     conexao = mysql.connector.connect(
-        host="localhost", user="root", password="", database="quiz_ds_infor"
+        host="localhost", user="root", password="", database=DB_NAME
     )
     cursor = conexao.cursor(dictionary=True)
 
@@ -190,6 +259,27 @@ def index():
     perguntas = listar_perguntas()
 
     return render_template("index.html", perguntas=perguntas)
+
+
+# Quiz
+@app.route("/quiz.html")
+def quiz():
+    # Faz uma requisição por todas as perguntas
+    perguntas = listar_perguntas()
+    # Pega os nomes dos temas e correlaciona com o ID
+    nomes_temas = {}
+    for pergunta in perguntas:
+        id = pergunta["id"]
+        nomes_temas[id] = listar_nomes_temas_pelo_id_pergunta(id)
+    indicadores_alternativas = alfabeto_minusculo
+
+    return render_template(
+        "quiz.html",
+        perguntas=perguntas,
+        nomes_temas=nomes_temas,
+        indicadores_alternativas=indicadores_alternativas,
+    )
+
 
 '''
 # Criar

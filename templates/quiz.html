@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz DS e Infor</title>
+
+    <!-- ----- CSS ----- -->
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/fonts.css" />
+    <link rel="stylesheet" href="/static/css/colors.css" />
+    <link rel="stylesheet" href="/static/css/global.css" />
+    <!-- --- CSS Específico --- -->
+    <link rel="stylesheet" href="/static/css/pages/quiz.css" />
+  </head>
+
+  <!-- ----- Scripts ----- -->
+  <script src="/static/js/themeManager.js" defer></script>
+  <!-- --- Script Específico --- -->
+  <script src="/static/js/pages/quiz.js" defer></script>
+
+  <body>
+    <div class="div-cards-perguntas">
+      {% for pergunta in perguntas %}
+      <div class="div-card-box" id="div-card-box-id-pergunta-{{ pergunta.id }}">
+        <div class="div-card-pergunta">
+          <ul class="ul-temas">
+            {% for nome_tema in nomes_temas[pergunta.id] %}
+            <li class="li-tema">{{ nome_tema }}</li>
+            {% endfor %}
+          </ul>
+          <p class="p-conteudo-pergunta">{{ pergunta.conteudo.pergunta }}</p>
+          <ul class="ul-alternativas">
+            {% for i in range(pergunta.alternativas | length) %}
+            <li class="li-alternativa">
+              <button
+                class="button-alternativa-pergunta"
+                onclick="enviarAlternativa({{ pergunta.id }}, {{ i }})"
+              >
+                {{ indicadores_alternativas[i] }}) {{ pergunta.alternativas[i]
+                }}
+              </button>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- --- Botão de Tema --- -->
+    <button id="button-tema" aria-label="Mudar tema"></button>
+  </body>
+</html>
