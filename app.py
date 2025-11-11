@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 import os
+import json
 
 
 app = Flask(__name__)
 HOST = "0.0.0.0"
 PORT = 5000
+DB_NAME = "quiz_ds_infor"
 caminho_schema_sql = "schema.sql"
 caminho_population_sql = "population.sql"
 
@@ -44,7 +46,7 @@ def executar_sql(caminho_sql: str):
     cursor = conexao.cursor(dictionary=True)
 
     # Lê o schema.sql
-    with open(caminho_sql, "r") as file:
+    with open(caminho_sql, "r", encoding="utf-8") as file:
         linhas = file.readlines()
         file.close()
 
@@ -62,7 +64,9 @@ def executar_sql(caminho_sql: str):
         elif "-- " in linha:
             antes, _, depois = linha.partition("--")
             print(_ + depois)
-            cursor.execute(antes)
+            # Evita rodar query vazia
+            if antes.strip():
+                cursor.execute(antes)
         # Fim de um comando
         elif linha.endswith(";") or linha.endswith(";\n"):
             comando_atual += linha
@@ -87,14 +91,14 @@ def inicializar_banco_de_dados():
 
 def conectar():
     conexao = mysql.connector.connect(
-        host="localhost", user="root", password="", database="biblioteca_python"
+        host="localhost", user="root", password="", database=DB_NAME
     )
     return conexao
 
 
 # ----- CRUD -----
 
-
+'''
 # --- Criar ---
 def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: str):
     conexao = conectar()
@@ -108,25 +112,28 @@ def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: st
     conexao.close()
 
     print("Livro Adicionado com Sucesso!!!")
+'''
 
 
 # --- Ler/Listar ---
-def listar_livros():
-    conexao = conectar()
+def listar_perguntas():
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database="quiz_ds_infor"
+    )
     cursor = conexao.cursor(dictionary=True)
-
-    cursor.execute("SELECT * from livros")
-    livros = cursor.fetchall()  # Pega todos os resultados
+    cursor.execute("SELECT * FROM perguntas")
+    perguntas = cursor.fetchall()
     conexao.close()
 
-    if livros:
-        print("Livro encontrado!")
-    else:
-        print("Nenhum livro encontrado!")
+    # Converte JSONs para dict/list
+    for p in perguntas:
+        p["conteudo"] = json.loads(p["conteudo"])
+        p["alternativas"] = json.loads(p["alternativas"])
 
-    return livros
+    return perguntas
 
 
+'''
 # --- Atualizar ---
 def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano):
     conexao = conectar()
@@ -154,10 +161,24 @@ def excluir_livro(id_livro):
     conexao.close()
 
     print("Livro Excluído com Sucesso!!!")
+'''
 
 
 def popular_db():
-    executar_sql(caminho_population_sql)
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database="quiz_ds_infor"
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) AS total FROM perguntas;")
+    resultado = cursor.fetchone()
+    conexao.close()
+
+    if resultado["total"] == 0:
+        print("📥 Populando banco de dados...")
+        executar_sql(caminho_population_sql)
+    else:
+        print("✅ Banco já populado. Nenhuma ação necessária.")
 
 
 # ----- Rotas -----
@@ -165,12 +186,12 @@ def popular_db():
 # Ler/Listar
 @app.route("/")
 def index():
-    # Faz uma requisição por todos os livros
-    livros = listar_livros()
+    # Faz uma requisição por todas as perguntas
+    perguntas = listar_perguntas()
 
-    return render_template("index.html", livros=livros)
+    return render_template("index.html", perguntas=perguntas)
 
-
+'''
 # Criar
 @app.route("/adicionar.html")
 def adicionar_html():
@@ -379,6 +400,7 @@ def atualizar_html():
         alunos=alunos,
         notas=notas,
     )
+'''
 
 
 if __name__ == "__main__":

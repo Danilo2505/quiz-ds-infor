@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS quiz_ds_infor
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_general_ci;
+
 -- Cria o banco de dados do quiz
 CREATE database quiz_ds_infor;
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base para Sites com Temas</title>
+
+    <!-- ----- CSS ----- -->
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/fonts.css" />
+    <link rel="stylesheet" href="/static/css/colors.css" />
+    <link rel="stylesheet" href="/static/css/global.css" />
+    <!-- --- CSS Específico --- -->
+    <link rel="stylesheet" href="/static/css/pages/index.css" />
+  </head>
+
+  <!-- ----- Scripts ----- -->
+  <script src="/static/js/themeManager.js" defer></script>
+
+  <body>
+    <h1></h1>
+
+    {% for pergunta in perguntas %}
+    <div class="div-card-pergunta">
+      <p class="p-conteudo-pergunta">{{ pergunta.conteudo.pergunta }}</p>
+      <div class="div-alternativas"></div>
+    </div>
+    {% endfor %}
+
+    <!-- --- Botão de Tema --- -->
+    <button id="button-tema" aria-label="Mudar tema"></button>
+  </body>
+</html>
