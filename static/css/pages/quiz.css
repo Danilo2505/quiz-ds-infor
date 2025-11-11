@@ -1,16 +1,84 @@
 :root {
+  /*  */
+  --padding-div-cards-navigator: 2rem;
+  /*  */
+  --size-button-cards-navigator: 3rem;
+  --padding-button-cards-navigator: 0.75rem;
+  /*  */
   --margin-div-card-pergunta: 2rem;
   --padding-div-card-pergunta: 2rem;
   --border-radius-div-card-pergunta: 2rem;
+  /*  */
   --gap-ul-temas: 1rem;
 }
 
-.div-cards-perguntas {
+#div-cards-perguntas {
   width: 100dvw;
   height: 100dvh;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+#div-cards-navigator {
+  position: fixed;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--padding-div-cards-navigator);
+  width: 100dvw;
+}
+
+#div-cards-navigator button {
+  width: var(--size-button-cards-navigator);
+  height: var(--size-button-cards-navigator);
+  background-color: transparent;
+  border-radius: 50vh;
+  border: none;
+  color: var(--accent-color-1);
+  display: flex;
+  padding: var(--padding-button-cards-navigator);
+}
+
+#div-cards-navigator button svg {
+  flex-grow: 1;
+  height: auto;
+  aspect-ratio: 1/1;
+}
+
+#button-previous-card:hover::after,
+#button-next-card:hover::before {
+  position: absolute;
+  width: auto;
+  height: calc(
+    var(--size-button-cards-navigator) -
+      calc(2 * var(--padding-button-cards-navigator))
+  );
+  font-size: 1rem;
+}
+
+#button-previous-card:hover::after {
+  content: "Pergunta Anterior";
+  transform: translateX(
+    calc(
+      var(--size-button-cards-navigator) - var(--padding-button-cards-navigator)
+    )
+  );
+}
+
+#button-next-card:hover::before {
+  content: "Próxima Pergunta";
+  transform: translateX(
+    calc(
+      -1 * calc(var(--size-button-cards-navigator) +
+            var(--padding-button-cards-navigator))
+    )
+  );
 }
 
 .div-card-box {
+  scroll-snap-align: center;
   width: 100dvw;
   height: 100dvh;
   display: flex;
@@ -51,27 +119,27 @@
 .li-alternativa {
 }
 
-.button-alternativa-pergunta {
+.button-alternativa {
   border: none;
   background-color: transparent;
   color: var(--accent-color-1);
   font-size: 1.25rem;
 }
 
-.button-alternativa-pergunta:hover {
+.button-alternativa:hover {
   color: var(--accent-color-2);
   transform: scale(1.1);
 }
 
 /* Esconde a Barra de Scroll */
-.div-cards-perguntas,
+#div-cards-perguntas,
 .ul-temas {
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.div-cards-perguntas::-webkit-scrollbar,
+#div-cards-perguntas::-webkit-scrollbar,
 .ul-temas::-webkit-scrollbar {
   display: none;
 }

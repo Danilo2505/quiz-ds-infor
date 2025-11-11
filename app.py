@@ -255,6 +255,9 @@ def popular_db():
 # Ler/Listar
 @app.route("/")
 def index():
+    # Redireciona para a rota quiz
+    return redirect(url_for("quiz"))
+
     # Faz uma requisição por todas as perguntas
     perguntas = listar_perguntas()
 
@@ -491,6 +494,25 @@ def atualizar_html():
         notas=notas,
     )
 '''
+
+
+# --- API ---
+# Alunos por sala
+@app.route("/api/perguntas")
+def obter_pergunta():
+    id = request.args.get("id")
+
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM perguntas WHERE perguntas.id = %s", (id,))
+
+    pergunta = cursor.fetchall()
+    conexao.close()
+
+    return pergunta
 
 
 if __name__ == "__main__":

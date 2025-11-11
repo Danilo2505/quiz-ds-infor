@@ -15,14 +15,33 @@
   </head>
 
   <!-- ----- Scripts ----- -->
+  <script src="/static/js/helpers.js"></script>
+  <script src="/static/js/db.js"></script>
   <script src="/static/js/themeManager.js" defer></script>
   <!-- --- Script Específico --- -->
   <script src="/static/js/pages/quiz.js" defer></script>
 
   <body>
-    <div class="div-cards-perguntas">
+    <div id="div-cards-perguntas">
+      <div id="div-cards-navigator">
+        <button id="button-previous-card">
+          <img
+            src="/static/assets/icons/chevron-left.svg"
+            alt=""
+            onload="buscarSvg(this)"
+          />
+        </button>
+        <button id="button-next-card">
+          <img
+            src="/static/assets/icons/chevron-right.svg"
+            alt=""
+            onload="buscarSvg(this)"
+          />
+        </button>
+      </div>
       {% for pergunta in perguntas %}
-      <div class="div-card-box" id="div-card-box-id-pergunta-{{ pergunta.id }}">
+      <!-- id="div-card-box-id-pergunta-{{ pergunta.id }}" -->
+      <div class="div-card-box" id_pergunta="{{ pergunta.id }}">
         <div class="div-card-pergunta">
           <ul class="ul-temas">
             {% for nome_tema in nomes_temas[pergunta.id] %}
@@ -34,8 +53,8 @@
             {% for i in range(pergunta.alternativas | length) %}
             <li class="li-alternativa">
               <button
-                class="button-alternativa-pergunta"
-                onclick="enviarAlternativa({{ pergunta.id }}, {{ i }})"
+                class="button-alternativa"
+                onclick="enviarAlternativa({{ pergunta.id }}, {{ i + 1 }})"
               >
                 {{ indicadores_alternativas[i] }}) {{ pergunta.alternativas[i]
                 }}
